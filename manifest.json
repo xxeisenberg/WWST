@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "WWST - WhatsApp Web Sidebar Toggle",
+  "version": "1.0.0",
+  "description": "Toggle WhatsApp Web sidebar with a hotkey or by clicking the sidebar",
+  "content_scripts": [
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
