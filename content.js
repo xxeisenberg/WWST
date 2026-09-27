@@ -1,25 +1,35 @@
 (function () {
-  function toggleSidebar() {
-    const sidebar = document.evaluate(
-      "/html/body/div[1]/div/div/div/div/div[3]/div/div[3]",
+  function queryXPath(xpath) {
+    return document.evaluate(
+      xpath,
       document,
       null,
       XPathResult.FIRST_ORDERED_NODE_TYPE,
       null,
     ).singleNodeValue;
+  }
+
+  // WhatsApp Web sometimes mounts under div[2] and sometimes under div[1].
+  // Try both prefixes and return the first match.
+  function queryWithFallback(suffix) {
+    for (const idx of [2, 1]) {
+      const node = queryXPath(`/html/body/div[${idx}]/div${suffix}`);
+      if (node) {
+        return node;
+      }
+    }
+    return null;
+  }
+
+  function toggleSidebar() {
+    const sidebar = queryWithFallback("/div/div/div/div[3]/div/div[3]");
 
     if (!sidebar) {
       console.log("sidebar not found.");
       return;
     }
 
-    const lines = document.evaluate(
-      "/html/body/div[1]/div/div/div/div/div[3]/div/div[2]/div[2]",
-      document,
-      null,
-      XPathResult.FIRST_ORDERED_NODE_TYPE,
-      null,
-    ).singleNodeValue;
+    const lines = queryWithFallback("/div/div/div/div[3]/div/div[2]/div[2]");
 
     sidebar.classList.toggle("wwst-hidden");
     if (sidebar.classList.contains("wwst-hidden")) {
@@ -32,13 +42,9 @@
   }
 
   function isChatsTabActive() {
-    const chatsButton = document.evaluate(
-      "/html/body/div[1]/div/div/div/div/div[3]/div/header/div/div[1]/div/div[1]/span/div/button",
-      document,
-      null,
-      XPathResult.FIRST_ORDERED_NODE_TYPE,
-      null,
-    ).singleNodeValue;
+    const chatsButton = queryWithFallback(
+      "/div/div/div/div[3]/div/header/div/div[1]/div/div[1]/span/div/button",
+    );
 
     return chatsButton?.getAttribute("aria-pressed") === "true";
   }
@@ -63,13 +69,9 @@
   });
 
   const interval = setInterval(() => {
-    const container = document.evaluate(
-      "/html/body/div[1]/div/div/div/div/div[3]/div/header/div/div[1]/div/div[1]/span/div/button",
-      document,
-      null,
-      XPathResult.FIRST_ORDERED_NODE_TYPE,
-      null,
-    ).singleNodeValue;
+    const container = queryWithFallback(
+      "/div/div/div/div[3]/div/header/div/div[1]/div/div[1]/span/div/button",
+    );
 
     if (!container) {
       return;
