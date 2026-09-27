@@ -4,8 +4,6 @@
   "version": "1.0.1",
   "description": "Toggle WhatsApp Web sidebar with a hotkey(Ctrl/Cmd + B) or by clicking the sidebar.",
   "icons": {
-    "16": "icon.png",
-    "48": "icon.png",
     "128": "icon.png"
   },
   "content_scripts": [
