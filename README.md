@@ -11,7 +11,24 @@ A lightweight browser extension to collapse the chat sidebar on WhatsApp Web.
 
 ### Hotkeys
 
-- **Collapse/Restore:** `Ctrl + B` (Windows/Linux) or `Cmd + B` (Mac)
+- **Default:** `Ctrl + B` (Windows/Linux) or `Cmd + B` (Mac)
+- **Customize:** Click the shortcut in the popup, then press a new combination.
+  Include `Ctrl`, `Cmd`, or `Alt` so the shortcut is not triggered by regular
+  typing.
+- By default, the hotkey works even while you are typing. You can change this in
+  the extension popup.
+
+## Popup
+
+Click the extension icon in the toolbar (pin it from the extensions menu if
+needed) to configure:
+
+- **Shortcut** — click the keycaps in the header and press a new combination.
+  `Ctrl`/`Cmd` is treated as the primary modifier, so the shortcut follows the
+  platform you are using.
+- **Ignore while typing** (default: off) — prevents your shortcut from toggling
+  the sidebar while the cursor is in a text field, such as the message composer.
+  Enable this if you use the shortcut to make text bold.
 
 ## Installation
 

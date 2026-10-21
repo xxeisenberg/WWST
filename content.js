@@ -49,24 +49,134 @@
     return chatsButton?.getAttribute("aria-pressed") === "true";
   }
 
-  document.addEventListener("keydown", (e) => {
-    if (
-      document.activeElement?.matches(
-        "input, textarea, [contenteditable='true']",
-      )
-    ) {
+  const DEFAULT_SHORTCUT = {
+    key: "b",
+    mod: true,
+    alt: false,
+    shift: false,
+  };
+
+  const DEFAULT_SETTINGS = {
+    ignoreHotkeyWhileTyping: false,
+    shortcut: DEFAULT_SHORTCUT,
+  };
+
+  const settings = {
+    ...DEFAULT_SETTINGS,
+    shortcut: { ...DEFAULT_SHORTCUT },
+  };
+
+  function normalizeShortcut(shortcut) {
+    if (!shortcut || typeof shortcut !== "object") {
+      return { ...DEFAULT_SHORTCUT };
+    }
+
+    const normalized = {
+      key:
+        typeof shortcut.key === "string" && shortcut.key
+          ? shortcut.key
+          : DEFAULT_SHORTCUT.key,
+      mod: Boolean(shortcut.mod),
+      alt: Boolean(shortcut.alt),
+      shift: Boolean(shortcut.shift),
+    };
+
+    // A bare key would fire while typing, so ignore malformed shortcuts.
+    return normalized.mod || normalized.alt
+      ? normalized
+      : { ...DEFAULT_SHORTCUT };
+  }
+
+  function loadSettings() {
+    chrome.storage.sync.get(DEFAULT_SETTINGS, (stored) => {
+      if (chrome.runtime.lastError || !stored) {
+        return;
+      }
+
+      settings.ignoreHotkeyWhileTyping =
+        stored.ignoreHotkeyWhileTyping === true;
+      settings.shortcut = normalizeShortcut(stored.shortcut);
+    });
+  }
+
+  loadSettings();
+
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName !== "sync") {
       return;
     }
 
-    if (!isChatsTabActive()) {
-      return;
+    if (changes.ignoreHotkeyWhileTyping) {
+      settings.ignoreHotkeyWhileTyping =
+        changes.ignoreHotkeyWhileTyping.newValue === true;
     }
 
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") {
-      e.preventDefault();
-      toggleSidebar();
+    if (changes.shortcut) {
+      settings.shortcut = normalizeShortcut(changes.shortcut.newValue);
     }
   });
+
+  function isEditableElement(element) {
+    if (!(element instanceof Element)) {
+      return false;
+    }
+
+    // isContentEditable also covers descendants of a contenteditable host.
+    if (element.isContentEditable) {
+      return true;
+    }
+
+    return element.matches(
+      "input, textarea, select, [role='textbox'], [contenteditable='true'], [contenteditable='plaintext-only']",
+    );
+  }
+
+  function isTyping(e) {
+    return (
+      isEditableElement(document.activeElement) || isEditableElement(e.target)
+    );
+  }
+
+  function matchesShortcut(e) {
+    const shortcut = settings.shortcut;
+
+    if (
+      typeof shortcut.key !== "string" ||
+      !shortcut.key ||
+      typeof e.key !== "string"
+    ) {
+      return false;
+    }
+
+    return (
+      e.key.toLowerCase() === shortcut.key.toLowerCase() &&
+      (e.ctrlKey || e.metaKey) === shortcut.mod &&
+      e.altKey === shortcut.alt &&
+      e.shiftKey === shortcut.shift
+    );
+  }
+
+  window.addEventListener(
+    "keydown",
+    (e) => {
+      if (settings.ignoreHotkeyWhileTyping && isTyping(e)) {
+        return;
+      }
+
+      if (!matchesShortcut(e)) {
+        return;
+      }
+
+      if (!isChatsTabActive()) {
+        return;
+      }
+
+      e.preventDefault();
+      e.stopPropagation();
+      toggleSidebar();
+    },
+    true,
+  );
 
   const interval = setInterval(() => {
     const container = queryWithFallback(
