@@ -2,6 +2,9 @@
 
 A lightweight browser extension to collapse the chat sidebar on WhatsApp Web.
 
+[![Available in the Chrome Web Store](badges/chrome-web-store.png)](https://chromewebstore.google.com/detail/wwst-whatsapp-web-sidebar/afmgpnjbhhfkdjaidbpjjoahfkpieoid)
+[![Get the Add-on for Firefox](badges/firefox-addon.png)](https://addons.mozilla.org/firefox/addon/wwst-whatsapp-sidebar-toggle/)
+
 ![Demo](demo.gif)
 
 ## How it Works
@@ -34,12 +37,20 @@ needed) to configure:
 
 ### Chrome / Edge / Brave
 
+**[Install from the Chrome Web Store](https://chromewebstore.google.com/detail/wwst-whatsapp-web-sidebar/afmgpnjbhhfkdjaidbpjjoahfkpieoid)**
+
+To install the development version instead:
+
 1. Clone or download this folder.
 2. Go to `chrome://extensions/` (or your browser's equivalent).
 3. Enable "Developer mode" in the top right.
 4. Click "Load unpacked" and select the directory containing the `manifest.json` and `content.js` file.
 
 ### Firefox
+
+**[Install from Firefox Add-ons](https://addons.mozilla.org/firefox/addon/wwst-whatsapp-sidebar-toggle/)**
+
+To load a temporary development build instead:
 
 1. Clone or download this folder.
 2. Go to `about:debugging#/runtime/this-firefox`.
