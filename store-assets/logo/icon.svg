@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="1024" height="1024">
+  <!-- WWST icon: a keycap with the sidebar-collapse glyph on its face. -->
+  <defs>
+    <linearGradient id="capSide" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0A9C78"/><stop offset="1" stop-color="#035C4C"/>
+    </linearGradient>
+    <linearGradient id="capTop" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6CF7BA"/><stop offset="1" stop-color="#12C48A"/>
+    </linearGradient>
+    <radialGradient id="gloss" cx=".3" cy="0" r=".9">
+      <stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="8" y="14" width="112" height="106" rx="26" fill="url(#capSide)"/>
+  <rect x="8" y="14" width="112" height="106" rx="26" fill="none" stroke="#02382A" stroke-opacity=".3" stroke-width="1"/>
+  <rect x="16" y="10" width="96" height="90" rx="20" fill="url(#capTop)"/>
+  <rect x="16" y="10" width="96" height="90" rx="20" fill="url(#gloss)"/>
+  <rect x="16" y="10" width="96" height="90" rx="20" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.5"/>
+  <rect x="32" y="28" width="64" height="54" rx="10" fill="none" stroke="#062419" stroke-width="6"/>
+  <rect x="32" y="28" width="22" height="54" rx="10" fill="#062419"/>
+  <rect x="44" y="28" width="10" height="54" fill="#062419"/>
+  <path d="M78 46l-8 9 8 9" fill="none" stroke="#062419" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

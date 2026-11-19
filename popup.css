@@ -69,8 +69,6 @@ body {
 
 .app-bar__icon {
   flex-shrink: 0;
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--app-bar-ring);
 }
 
 .app-bar__text {
