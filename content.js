@@ -31,61 +31,27 @@
 
     const lines = queryWithFallback("/div/div/div/div[3]/div/div[2]/div[2]");
 
-    sidebar.classList.toggle("wwst-hidden");
-    if (sidebar.classList.contains("wwst-hidden")) {
-      sidebar.style.display = "none";
-      lines.style.borderInlineStartWidth = "0";
-    } else {
-      sidebar.style.display = "";
-      lines.style.borderInlineStartWidth = "1px";
+    const hidden = sidebar.classList.toggle("wwst-hidden");
+    sidebar.style.display = hidden ? "none" : "";
+    if (lines) {
+      lines.style.borderInlineStartWidth = hidden ? "0" : "1px";
     }
   }
 
-  function isChatsTabActive() {
-    const chatsButton = queryWithFallback(
+  function getChatsButton() {
+    return queryWithFallback(
       "/div/div/div/div[3]/div/header/div/div[1]/div/div[1]/span/div/button",
     );
-
-    return chatsButton?.getAttribute("aria-pressed") === "true";
   }
 
-  const DEFAULT_SHORTCUT = {
-    key: "b",
-    mod: true,
-    alt: false,
-    shift: false,
-  };
-
-  const DEFAULT_SETTINGS = {
-    ignoreHotkeyWhileTyping: false,
-    shortcut: DEFAULT_SHORTCUT,
-  };
+  function isChatsTabActive() {
+    return getChatsButton()?.getAttribute("aria-pressed") === "true";
+  }
 
   const settings = {
     ...DEFAULT_SETTINGS,
     shortcut: { ...DEFAULT_SHORTCUT },
   };
-
-  function normalizeShortcut(shortcut) {
-    if (!shortcut || typeof shortcut !== "object") {
-      return { ...DEFAULT_SHORTCUT };
-    }
-
-    const normalized = {
-      key:
-        typeof shortcut.key === "string" && shortcut.key
-          ? shortcut.key
-          : DEFAULT_SHORTCUT.key,
-      mod: Boolean(shortcut.mod),
-      alt: Boolean(shortcut.alt),
-      shift: Boolean(shortcut.shift),
-    };
-
-    // A bare key would fire while typing, so ignore malformed shortcuts.
-    return normalized.mod || normalized.alt
-      ? normalized
-      : { ...DEFAULT_SHORTCUT };
-  }
 
   function loadSettings() {
     chrome.storage.sync.get(DEFAULT_SETTINGS, (stored) => {
@@ -149,7 +115,7 @@
     }
 
     return (
-      e.key.toLowerCase() === shortcut.key.toLowerCase() &&
+      eventKey(e).toLowerCase() === shortcut.key.toLowerCase() &&
       (e.ctrlKey || e.metaKey) === shortcut.mod &&
       e.altKey === shortcut.alt &&
       e.shiftKey === shortcut.shift
@@ -173,28 +139,32 @@
 
       e.preventDefault();
       e.stopPropagation();
-      toggleSidebar();
+
+      // Holding the shortcut down shouldn't flicker the sidebar.
+      if (!e.repeat) {
+        toggleSidebar();
+      }
     },
     true,
   );
 
-  const interval = setInterval(() => {
-    const container = queryWithFallback(
-      "/div/div/div/div[3]/div/header/div/div[1]/div/div[1]/span/div/button",
-    );
+  // Delegate from the document so the listener survives WhatsApp re-rendering
+  // the header. Capture phase reads aria-pressed before WhatsApp updates it.
+  document.addEventListener(
+    "click",
+    (e) => {
+      const chatsButton = getChatsButton();
 
-    if (!container) {
-      return;
-    }
+      if (!chatsButton || !chatsButton.contains(e.target)) {
+        return;
+      }
 
-    clearInterval(interval);
-
-    container.addEventListener("click", () => {
-      if (container.getAttribute("aria-pressed") !== "true") {
+      if (chatsButton.getAttribute("aria-pressed") !== "true") {
         return;
       }
 
       requestAnimationFrame(toggleSidebar);
-    });
-  }, 1000);
+    },
+    true,
+  );
 })();

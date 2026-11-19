@@ -1,15 +1,3 @@
-const DEFAULT_SHORTCUT = {
-  key: "b",
-  mod: true,
-  alt: false,
-  shift: false,
-};
-
-const DEFAULT_SETTINGS = {
-  ignoreHotkeyWhileTyping: false,
-  shortcut: DEFAULT_SHORTCUT,
-};
-
 const MODIFIER_KEYS = new Set([
   "Alt",
   "AltGraph",
@@ -76,27 +64,6 @@ function showStatus(message) {
   statusTimeout = setTimeout(() => {
     status.textContent = "";
   }, 1500);
-}
-
-function normalizeShortcut(shortcut) {
-  if (!shortcut || typeof shortcut !== "object") {
-    return { ...DEFAULT_SHORTCUT };
-  }
-
-  const normalized = {
-    key:
-      typeof shortcut.key === "string" && shortcut.key
-        ? shortcut.key
-        : DEFAULT_SHORTCUT.key,
-    mod: Boolean(shortcut.mod),
-    alt: Boolean(shortcut.alt),
-    shift: Boolean(shortcut.shift),
-  };
-
-  // A bare key would fire while typing, so ignore malformed shortcuts.
-  return normalized.mod || normalized.alt
-    ? normalized
-    : { ...DEFAULT_SHORTCUT };
 }
 
 function formatKey(key) {
@@ -200,7 +167,9 @@ function onDocumentPointerDown(e) {
 }
 
 function onRecordingKeyDown(e) {
-  if (e.key === "Escape") {
+  const key = eventKey(e);
+
+  if (key === "Escape") {
     e.preventDefault();
     e.stopPropagation();
     stopRecording();
@@ -214,7 +183,7 @@ function onRecordingKeyDown(e) {
     return;
   }
 
-  if (IGNORED_KEYS.has(e.key)) {
+  if (IGNORED_KEYS.has(key)) {
     e.preventDefault();
     e.stopPropagation();
     return;
@@ -233,7 +202,7 @@ function onRecordingKeyDown(e) {
   }
 
   saveShortcut({
-    key: e.key,
+    key,
     mod,
     alt,
     shift: e.shiftKey,
